@@ -50,7 +50,6 @@ class ViewController: UIViewController {
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
         resultLabel.text = content
-        print("here two")
     }
     
     func updateResultLabelWithDataStructure(_ dataStructure: [String]) {
@@ -84,24 +83,10 @@ class ViewController: UIViewController {
         } else if operation == "*" {
             result = op1 * op2
         }
-        return String(result.cleanValue)
+    
+        return String(result.prettyOutput)
     }
     
-    // TODO: A simple calculate method for integers.
-    //       Modify this one or create your own.
-    func intCalculate(a: Int, b:Int, operation: String) -> Int {
-        print("Calculation requested for \(a) \(operation) \(b)")
-        if operation == "+" {
-            return a + b
-        } else if operation == "-" {
-            return a - b
-        } else if operation == "/" {
-            return a / b
-        } else if operation == "*" {
-            return a * b
-        }
-        return 0
-    }
     
     
     // REQUIRED: The responder to a number button being pressed.
@@ -112,6 +97,11 @@ class ViewController: UIViewController {
         //updateResultLabel(sender.content)
         // Fill me in!
         // if on calculation
+        if currentOperator == "=" {
+            clearDataStructure()
+            currentOperator = nil
+        }
+        
         if currentOperator != nil {
             if secondDataStructure.count < LIM {
                 secondDataStructure.append(sender.content)
@@ -140,24 +130,39 @@ class ViewController: UIViewController {
             return
         }
         
-        if currentOperator != nil{
-            mergeDataStructure(withOperation: currentOperator!)
-            updateResultLabelWithDataStructure(someDataStructure)
-            currentOperator = nil
-        }
         if sender.content == "C" {
             updateResultLabel("0")
             clearDataStructure()
             currentOperator = nil
-        } else if sender.content == "=" {
-            currentOperator = nil
-        } else if ["*", "+", "-", "/"].contains(sender.content) {
-            currentOperator = sender.content
         } else if sender.content == "+/-" {
-            secondDataStructure = Helper.convertStringToDataStructure(str: "-1")
-            print(secondDataStructure)
-            mergeDataStructure(withOperation: "*")
+            if currentOperator != nil && secondDataStructure != [""]{
+                if secondDataStructure.contains("-") {
+                    secondDataStructure.remove(at: 0)
+                } else {
+                    secondDataStructure.insert("-", at: 0)
+                }
+                updateResultLabelWithDataStructure(secondDataStructure)
+            } else {
+                if someDataStructure.contains("-") {
+                    someDataStructure.remove(at: 0)
+                } else {
+                    someDataStructure.insert("-", at: 0)
+                }
+                updateResultLabelWithDataStructure(someDataStructure)
+            }
+        }
+        
+        
+        if currentOperator != nil && someDataStructure != [""] && secondDataStructure != [""] {
+            mergeDataStructure(withOperation: currentOperator!)
             updateResultLabelWithDataStructure(someDataStructure)
+            currentOperator = nil
+        }
+        
+        
+    
+        if ["*", "+", "-", "/", "="].contains(sender.content) {
+            currentOperator = sender.content
         }
         
         

@@ -32,13 +32,15 @@ extension Double {
             3. Display an integer when the result is an integer of allowable size.
             Optional: Use scientific notation for any values that exceed the character max.
         */
-        return "\(self)"
-    }
-    
-    
-    var cleanValue: String {
+        let v = String(self).characters.filter{$0 != "."}
+        if v.count > 7 {
+            return self.scientificStyle
+        }
         return self.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(self)
     }
+    
+    
+    
     
 }
 
