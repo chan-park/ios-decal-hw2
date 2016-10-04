@@ -34,6 +34,12 @@ extension Double {
         */
         return "\(self)"
     }
+    
+    
+    var cleanValue: String {
+        return self.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(self)
+    }
+    
 }
 
 // MARK: Enables Colors from Hex Codes

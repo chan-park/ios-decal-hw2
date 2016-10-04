@@ -25,6 +25,7 @@ class ViewController: UIViewController {
     var secondDataStructure: [String] = [""]
     var currentOperator: String? = nil
     var clearLabelNextTimeButtonIsPressed: Bool = false
+    let LIM = 8
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,15 +46,11 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    // TODO: A method to update your data structure(s) would be nice.
-    //       Modify this one or create your own.
-    func updateSomeDataStructure(_ content: String) {
-    }
-    
     // TODO: Ensure that resultLabel gets updated.
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
         resultLabel.text = content
+        print("here two")
     }
     
     func updateResultLabelWithDataStructure(_ dataStructure: [String]) {
@@ -61,25 +58,33 @@ class ViewController: UIViewController {
         for n in dataStructure {
             str += n
         }
-        resultLabel.text = str
+        updateResultLabel(str)
     }
     
     func mergeDataStructure(withOperation operation:String) {
-        if Helper.isInteger(someDataStructure) && Helper.isInteger(secondDataStructure) {
-            let firstOperand = Int(Helper.convertDataToString(data: someDataStructure))
-            let secondOperand = Int(Helper.convertDataToString(data: secondDataStructure))
-            let result = intCalculate(a: firstOperand!, b: secondOperand!, operation: operation)
-            someDataStructure = Helper.convertStringToDataStructure(str: String(result))
-            secondDataStructure = [""]
-        } else {
-            
-        }
+        let firstOperand = Helper.convertDataToString(data: someDataStructure)
+        let secondOperand = Helper.convertDataToString(data: secondDataStructure)
+        let result = calculate(a: firstOperand, b: secondOperand, operation: operation)
+        someDataStructure = Helper.convertStringToDataStructure(str: result)
+        secondDataStructure = [""]
     }
     
     // TODO: A calculate method with no parameters, scary!
     //       Modify this one or create your own.
-    func calculate() -> String {
-        return "0"
+    func calculate(a: String, b:String, operation: String) -> String {
+        let op1 = Double(a)!
+        let op2 = Double(b)!
+        var result: Double = 0.0
+        if operation == "+" {
+            result = op1 + op2
+        } else if operation == "-" {
+            result = op1 - op2
+        } else if operation == "/" {
+            result = op1 / op2
+        } else if operation == "*" {
+            result = op1 * op2
+        }
+        return String(result.cleanValue)
     }
     
     // TODO: A simple calculate method for integers.
@@ -98,12 +103,6 @@ class ViewController: UIViewController {
         return 0
     }
     
-    // TODO: A general calculate method for doubles
-    //       Modify this one or create your own.
-    func calculate(a: String, b:String, operation: String) -> Double {
-        print("Calculation requested for \(a) \(operation) \(b)")
-        return 0.0
-    }
     
     // REQUIRED: The responder to a number button being pressed.
     // invariants: currentOperator is nil if it is not pressed just now
@@ -114,13 +113,13 @@ class ViewController: UIViewController {
         // Fill me in!
         // if on calculation
         if currentOperator != nil {
-            if secondDataStructure.count < 8 {
+            if secondDataStructure.count < LIM {
                 secondDataStructure.append(sender.content)
                 updateResultLabelWithDataStructure(secondDataStructure)
                 
             }
         } else {
-            if someDataStructure.count < 8 {
+            if someDataStructure.count < LIM {
                 someDataStructure.append(sender.content)
                 updateResultLabelWithDataStructure(someDataStructure)
             }
@@ -136,7 +135,8 @@ class ViewController: UIViewController {
         //guard Int(sender.content) != nil else { return }
         print("the operator \(sender.content) was pressed")
         // Fill me in!
-        if someDataStructure != [""] && secondDataStructure != [""] {
+        // If both data structure empty, return
+        if someDataStructure == [""] {
             return
         }
         
@@ -151,32 +151,62 @@ class ViewController: UIViewController {
             currentOperator = nil
         } else if sender.content == "=" {
             currentOperator = nil
-        } else if ["*", "+", "-"].contains(sender.content) {
+        } else if ["*", "+", "-", "/"].contains(sender.content) {
             currentOperator = sender.content
-            clearLabelNextTimeButtonIsPressed = true
+        } else if sender.content == "+/-" {
+            secondDataStructure = Helper.convertStringToDataStructure(str: "-1")
+            print(secondDataStructure)
+            mergeDataStructure(withOperation: "*")
+            updateResultLabelWithDataStructure(someDataStructure)
         }
-        // Calculate the current stack of calculation and display!
-        
-        
-        
-        
-        
-        
         
         
         
     }
     
     // REQUIRED: The responder to a number or operator button being pressed.
+    // "0", "." pressed
     func buttonPressed(_ sender: CustomButton) {
         // Fill me in!
-        str = ""
-        someDataStructure += [sender.currentTitle!]
-        for n in someDataStructure {
-            str = str + n
+        
+        
+        if currentOperator != nil {
+            if secondDataStructure.count < LIM {
+                if sender.content == "." {
+                    if !secondDataStructure.contains(".") {
+                        if secondDataStructure == [""] {
+                            secondDataStructure.append("0")
+                        }
+                        secondDataStructure.append(sender.content)
+                        updateResultLabelWithDataStructure(secondDataStructure)
+                    }
+                } else if sender.content == "0" {
+                    if secondDataStructure == ["", "0"] {
+                        return
+                    }
+                    secondDataStructure.append(sender.content)
+                    updateResultLabelWithDataStructure(secondDataStructure)
+                }
+            }
+        } else {
+            if someDataStructure.count < LIM {
+                if sender.content == "." {
+                    if !someDataStructure.contains(".") {
+                        if someDataStructure == [""] {
+                            someDataStructure.append("0")
+                        }
+                        someDataStructure.append(sender.content)
+                        updateResultLabelWithDataStructure(someDataStructure)
+                    }
+                } else if sender.content == "0" {
+                    if someDataStructure == ["", "0"] {
+                        return
+                    }
+                    someDataStructure.append(sender.content)
+                    updateResultLabelWithDataStructure(someDataStructure)
+                }
+            }
         }
-        updateResultLabel(str)
-        print("pressed \(str)")
     }
     
     

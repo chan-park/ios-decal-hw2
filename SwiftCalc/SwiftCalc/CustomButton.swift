@@ -19,6 +19,9 @@ class CustomButton: UIButton {
         self.content = ""
         super.init(frame: frame)
         // Do any additional setup here.
+        self.backgroundColor = UIColor.white
+        self.setTitleColor(UIColor.black, for: .normal)
+        
     }
     
     // TODO: Custom Button Behavior for Styling
